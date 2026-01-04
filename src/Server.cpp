@@ -1,14 +1,5 @@
 #include "../include/Server.hpp"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <cstring>
-#include <cerrno>
-#include <iostream>
-#include <cstdlib>
+#include "../include/Parser.hpp"
 
 Server::Server(int port, const std::string &password)
 	: m_listener(-1), m_password(password), m_pollfds(), m_clients()
@@ -50,11 +41,7 @@ void	Server::setupListener(int port)
 		throw std::runtime_error("listen() failed");
 
 	// set non-blocking
-	int flags = fcntl(m_listener, F_GETFL, 0);
-	if (flags == -1)
-		flags = 0;
-	if (fcntl(m_listener, F_SETFL, flags | O_NONBLOCK) == -1)
-		throw std::runtime_error("fcntl() failed");
+	fcntl(m_listener, F_SETFL, O_NONBLOCK);
 
 	// add listener to pollfds
 	addPollFd(m_listener, POLLIN);
@@ -94,14 +81,10 @@ void	Server::acceptNewClients()
 			if (errno == EWOULDBLOCK || errno == EAGAIN) // This is if there are no more clients waiting to be accepted right now
 				break ;
 			throw std::runtime_error("accept() failed");
-			break ;
 		}
 
 		// set non-blocking
-		int flags = fcntl(client_fd, F_GETFL, 0);
-		if (flags == -1)
-			flags = 0;
-		fcntl(client_fd, F_SETFL, flags | O_NONBLOCK);
+		fcntl(client_fd, F_SETFL, O_NONBLOCK);
 
 		Client *c = new Client(client_fd);
 		m_clients[client_fd] = c;
@@ -127,24 +110,30 @@ void	Server::removeClient(int fd)
 
 void Server::handleClientEvent(int fd, short events)
 {
+	std::vector<Command>	commands;
+	char					buffer[4096];
+	std::string				cmd;
+
 	if (events & (POLLHUP | POLLERR | POLLNVAL)) // for handling abnormal or terminal socket states
 		removeClient(fd);
 	else if (events & POLLIN) // means there is data to read
 	{
-		char cmd[4096];
-		ssize_t ret = recv(fd, cmd, sizeof(cmd) - 1, 0);
+		ssize_t ret = recv(fd, buffer, sizeof(buffer) - 1, 0);
 		if (ret <= 0)
 		{
 			removeClient(fd);
 			return ;
 		}
-		cmd[ret] = '\0';
+		buffer[ret] = '\0';
+		cmd = buffer;
 		Client *ptr = m_clients[fd];
 		ptr->appendToBuffer(cmd);
+		if(ptr->getBuffer().find_first_of("\r\n") == std::string::npos) // if the cmd is not full
+			return ;
 		// parce here the cmd
-			// !!
-			// !!
+		commands = Parser::processBuffer(cmd);
 		// and execute
+		// !!
 		ptr->clearBuffer();
 	}
 }

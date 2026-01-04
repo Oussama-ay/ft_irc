@@ -2,14 +2,7 @@
 #define SERVER_HPP
 
 #include "Client.hpp"
-
-#include <string>
-#include <vector>
-#include <map>
-#include <poll.h>
-#include <iostream>
-#include <cstdlib>
-#include <signal.h>
+#include "common.hpp"
 
 class Server
 {

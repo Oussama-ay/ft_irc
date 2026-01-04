@@ -1,7 +1,5 @@
 #include "../include/Client.hpp"
 
-#include <unistd.h>
-
 Client::Client(int fd) : _fd(fd), _buffer() {}
 
 Client::~Client() {}
