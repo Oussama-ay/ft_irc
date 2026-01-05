@@ -10,10 +10,12 @@
 .
 ├── include
 │   ├── Server.hpp   # Server class declaration
-│   └── Client.hpp   # Client class declaration
+│   ├── Client.cpp   # Client implementation
+│   └── Parser.hpp   # Parser.cpp class declaration
 ├── src
 │   ├── Server.cpp   # Server implementation
 │   ├── Client.cpp   # Client implementation
+│   ├── Parser.cpp   # Parser implementation
 │   └── main.cpp     # server bootstrap
 └── Makefile         # Build rules
 ```
