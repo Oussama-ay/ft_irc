@@ -1,13 +1,68 @@
 #include "../include/Client.hpp"
+#include "../include/Parser.hpp"
 
-Client::Client(int fd) : _fd(fd), _buffer() {}
+Client::Client(int fd) : m_fd(fd), m_registered(false), m_passOk(false), m_nickOk(false), m_userOk(false) {}
 
 Client::~Client() {}
 
-int Client::getFd() const { return _fd; }
+int Client::getFd() const { return m_fd; }
 
-std::string &Client::getBuffer() { return _buffer; }
 
-void Client::appendToBuffer(const std::string &data) { _buffer += data; }
+std::string &Client::getRecvBuffer() { return m_recvBuffer; }
 
-void Client::clearBuffer() { _buffer.clear(); }
+std::string &Client::getSendBuffer() { return m_sendBuffer; }
+
+void Client::appendToRecv(const std::string &data) { m_recvBuffer += data; }
+
+void Client::clearRecv() { m_recvBuffer.clear(); }
+
+void Client::clearSend() { m_sendBuffer.clear(); }
+
+const std::string& Client::getNickname() const { return m_nickname; }
+
+const std::string& Client::getUsername() const { return m_username; }
+
+
+void Client::setNickname(const std::string& nickname) { m_nickname = nickname; }
+
+void Client::setUsername(const std::string& username) { m_username = username; }
+
+void Client::setRealname(const std::string& realname) { m_realname = realname; }
+
+void Client::setRegistered(bool registered) { m_registered = registered; }
+
+bool Client::isRegistered() const { return m_registered; }
+
+void	Client::setPassOk(bool ok)
+{
+	m_passOk = ok;
+}
+
+void	Client::setNickOk(bool ok)
+{
+	m_nickOk = ok;
+}
+
+void	Client::setUserOk(bool ok)
+{
+	m_userOk = ok;
+}
+bool	Client::isPassOk() const
+{
+	return (m_passOk);
+}
+
+bool	Client::isNickOk() const
+{
+	return (m_nickOk);
+}
+
+bool	Client::isUserOk() const
+{
+	return (m_userOk);
+}
+
+void	Client::appendToSend(const std::string &data)
+{
+	m_sendBuffer += data;
+}

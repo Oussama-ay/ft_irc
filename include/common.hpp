@@ -7,6 +7,8 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#include <set>
+#include <algorithm>
 
 // POSIX / system headers
 #include <sys/socket.h>
