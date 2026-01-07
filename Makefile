@@ -6,8 +6,7 @@ SRCS = src/main.cpp src/Server.cpp src/Client.cpp src/Parser.cpp src/Channel.cpp
 		src/execute.cpp src/Server_utils.cpp \
 		src/commands/Join.cpp src/commands/Pass.cpp src/commands/Nick.cpp \
 		src/commands/User.cpp  src/commands/Ping.cpp src/commands/Cap.cpp \
-# 		src/commands/Privmsg.cpp src/commands/Quit.cpp src/commands/Names.cpp \
-# 		src/commands/User.cpp
+		src/commands/Privmsg.cpp src/commands/Quit.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

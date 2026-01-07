@@ -25,3 +25,8 @@ const std::set<Client*>& Channel::getMembers() const
 {
 	return m_members;
 }
+
+const std::string	&Channel::getName() const
+{
+	return m_name;
+}

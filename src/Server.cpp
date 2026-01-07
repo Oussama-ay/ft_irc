@@ -11,6 +11,8 @@ Server::Server(int port, const std::string &password)
 	commandMap["JOIN"] = &Server::handleJoin;
 	commandMap["PING"] = &Server::handlePing;
 	commandMap["CAP"] = &Server::handleCap;
+	commandMap["PRIVMSG"] = &Server::handlePrivmsg;
+	commandMap["QUIT"] = &Server::handleQuit;
 }
 
 Server::~Server()
@@ -20,6 +22,10 @@ Server::~Server()
 	for (std::map<int, Client *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
 	{
 		close(it->first);
+		delete it->second;
+	}
+	for (std::map<std::string, Channel *>::iterator it = m_channels.begin(); it != m_channels.end(); ++it)
+	{
 		delete it->second;
 	}
 }
@@ -53,10 +59,12 @@ void	Server::acceptNewClients()
 void	Server::removeClient(int fd)
 {
 	std::map<int, Client *>::iterator it = m_clients.find(fd);
+	std::map<std::string, Client *>::iterator it2 = m_nicknames.find(it->second->getNickname());
 	if (it != m_clients.end())
 	{
 		delete it->second;
 		m_clients.erase(it);
+		m_nicknames.erase(it2);
 	}
 	removePollFd(fd);
 	close(fd);
@@ -72,7 +80,10 @@ void Server::handleClientEvent(int fd, short events)
 		return ;
 	Client &client = *(it->second);
 	if (events & (POLLHUP | POLLERR | POLLNVAL)) // for handling abnormal or terminal socket states
+	{
 		removeClient(fd);
+		return ;
+	}
 	if (events & POLLIN)
 		handleReadable(client);
 	if (events & POLLOUT)
@@ -95,13 +106,11 @@ void	Server::handleReadable(Client &client)
 			return ;
 	std::vector<Command> cmds = Parser::processBuffer(client.getRecvBuffer());
 	execute(client, cmds);
-	client.clearRecv();
 }
 
 void	Server::handleWritable(Client &client)
 {
 	std::string &out = client.getSendBuffer();
-	std::cout << "send = " << out;
 	if (out.empty())
 	{
 		struct pollfd *p = findPollfd(client.getFd());

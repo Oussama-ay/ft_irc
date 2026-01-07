@@ -17,10 +17,12 @@ public:
 	
     const std::set<Client *>&	getMembers() const;
 	const std::string&			getTopic() const;
+    const std::string&          getName() const;
 
     void addMember(Client *client);
     void removeMember(Client *client);
     bool hasMember(Client *client) const;
+
 };
 
 #endif

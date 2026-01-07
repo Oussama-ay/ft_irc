@@ -32,7 +32,6 @@ private:
 	void	checkRegistration(Client &client);
 	void 	execute(Client& client, const std::vector<Command>& input);
 	std::string	numeric(const std::string &code, const std::string &nick, const std::string &msg) const;
-	void	sendTopic(Client& client, const std::vector<std::string>& topic);
 
 	void	handlePass(Client& client, const Command& cmd);
 	void	handleNickname(Client& client, const Command& cmd);
@@ -40,17 +39,28 @@ private:
 	void	handleJoin(Client& client, const Command& cmd);
 	void	handlePing(Client &client, const Command &cmd);
 	void	handleCap(Client& client, const Command& cmd);
+	void	handlePrivmsg(Client& client, const Command& cmd);
+	void	handleQuit(Client& client, const Command& cmd);
 
 	bool	isNicknameInUse(const std::string& nickname) const;
 	void	broadcast(Channel* channel, const std::string& message);
-	void	findOrCreateChannel(Client& client, const std::string& channelName, const std::string&	topic);
+	void	findOrCreateChannel(Client& client, const std::string& channelName);
 	std::string	makePrefix(const Client &client) const;
+
+	// PRIVMSG helper methods
+	Client	*findClientByNickname(const std::string& nickname) const;
+	void	sendPrivmsgToChannel(Client& client, Channel* channel, const std::string& message);
+	void	sendPrivmsgToUser(Client& client, Client* targetClient, const std::string& message);
+
+	// QUIT helper methods
+	void	notifyQuitFromChannels(Client& client, const std::string& quitMessage);
 
 	int							m_listener;
 	std::string					m_hostname;
 	std::string					m_password;
 	std::vector<struct pollfd>	m_pollfds;
 	std::map<int, Client *>		m_clients;
+	std::map<std::string, Client *>		m_nicknames;
 	std::map<std::string, Channel *>		m_channels;
 };
 
