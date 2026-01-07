@@ -1,8 +1,10 @@
 #include "../include/Channel.hpp"
 
-Channel::Channel(const std::string& name, const std::string& topic) : m_name(name), m_topic(topic) {}
+Channel::Channel(const std::string& name) : m_name(name) {}
 
 Channel::~Channel() {}
+
+const std::string&			Channel::getTopic() const { return m_topic; }
 
 void Channel::addMember(Client* client)
 {

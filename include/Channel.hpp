@@ -12,12 +12,15 @@ private:
     std::string			m_topic;
 
 public:
-    Channel(const std::string &name, const std::string& topic);
+    Channel(const std::string &name);
     ~Channel();
+	
+    const std::set<Client *>&	getMembers() const;
+	const std::string&			getTopic() const;
+
     void addMember(Client *client);
     void removeMember(Client *client);
     bool hasMember(Client *client) const;
-    const std::set<Client *> &getMembers() const;
 };
 
 #endif

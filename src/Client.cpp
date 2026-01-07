@@ -1,7 +1,7 @@
 #include "../include/Client.hpp"
 #include "../include/Parser.hpp"
 
-Client::Client(int fd) : m_fd(fd), m_registered(false), m_passOk(false), m_nickOk(false), m_userOk(false) {}
+Client::Client(int fd) : m_fd(fd), m_registered(false), m_passOk(false), m_nickOk(false), m_userOk(false), m_isOperator(false) {}
 
 Client::~Client() {}
 
@@ -47,6 +47,12 @@ void	Client::setUserOk(bool ok)
 {
 	m_userOk = ok;
 }
+
+void Client::setOperator(bool ok)
+{
+	m_isOperator = ok;
+}
+
 bool	Client::isPassOk() const
 {
 	return (m_passOk);
@@ -60,6 +66,11 @@ bool	Client::isNickOk() const
 bool	Client::isUserOk() const
 {
 	return (m_userOk);
+}
+
+bool	Client::isOperator() const
+{
+	return m_isOperator;
 }
 
 void	Client::appendToSend(const std::string &data)
