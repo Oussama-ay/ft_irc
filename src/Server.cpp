@@ -13,6 +13,7 @@ Server::Server(int port, const std::string &password)
 	commandMap["CAP"] = &Server::handleCap;
 	commandMap["PRIVMSG"] = &Server::handlePrivmsg;
 	commandMap["QUIT"] = &Server::handleQuit;
+	commandMap["TOPIC"] = &Server::handleTopic;
 }
 
 Server::~Server()

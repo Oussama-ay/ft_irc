@@ -6,6 +6,8 @@ Channel::~Channel() {}
 
 const std::string&			Channel::getTopic() const { return m_topic; }
 
+const char&			Channel::getMode() const { return m_mode; }
+
 void Channel::addMember(Client* client)
 {
 	m_members.insert(client);
@@ -30,3 +32,14 @@ const std::string	&Channel::getName() const
 {
 	return m_name;
 }
+
+void	Channel::setTopic(std::string topic)
+{
+	m_topic = topic;
+}
+
+void	Channel::setMode(char c)
+{
+	m_mode = c;
+}
+

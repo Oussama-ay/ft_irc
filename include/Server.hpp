@@ -41,11 +41,16 @@ private:
 	void	handleCap(Client& client, const Command& cmd);
 	void	handlePrivmsg(Client& client, const Command& cmd);
 	void	handleQuit(Client& client, const Command& cmd);
-
-	bool	isNicknameInUse(const std::string& nickname) const;
-	void	broadcast(Channel* channel, const std::string& message);
-	void	findOrCreateChannel(Client& client, const std::string& channelName);
+	void	handleTopic(Client& client, const Command& cmd);
+	
 	std::string	makePrefix(const Client &client) const;
+	bool	isNicknameInUse(const std::string& nickname) const;
+	void	broadcast(const Channel* channel, const std::string& message);
+	void	findOrCreateChannel(Client& client, const std::string& channelName);
+
+	// TOPIC helper methods
+	void	viewOrWriteTopic(Client& client, const Channel* channel);
+	void	checkPermisionAndBroadcast(Client& client, const std::vector<std::string>& args);
 
 	// PRIVMSG helper methods
 	Client	*findClientByNickname(const std::string& nickname) const;

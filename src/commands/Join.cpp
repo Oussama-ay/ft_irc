@@ -7,7 +7,7 @@ std::string	Server::makePrefix(const Client &client) const
 	return (nick + "!" + user + "@" + m_hostname);
 }
 
-void Server::broadcast(Channel* channel, const std::string& message)
+void Server::broadcast(const Channel* channel, const std::string& message)
 {
 	const std::set<Client*>& 			members = channel->getMembers();
 	std::set<Client*>::const_iterator	it = members.begin();
@@ -71,7 +71,6 @@ void	Server::handleJoin(Client& client, const Command& cmd)
 	channelName = cmd.args[0];
 	findOrCreateChannel(client, channelName);
 
-	// send NAMES list
 	const std::set<Client *>&	cl = m_channels[channelName]->getMembers();
 	std::string		names("= " + channelName + " ");
 	std::string		endMsg(channelName + " :End of /NAMES list");
