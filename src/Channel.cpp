@@ -1,12 +1,20 @@
 #include "../include/Channel.hpp"
 
-Channel::Channel(const std::string& name) : m_name(name) {}
+Channel::Channel(const std::string& name)
+	: m_name(name), m_inviteOnly(false), m_topicOpsOnly(false), m_hasKey(false), m_key(), m_hasUserLimit(false), m_userLimit(0) {}
 
 Channel::~Channel() {}
 
 const std::string&			Channel::getTopic() const { return m_topic; }
 
-const char&			Channel::getMode() const { return m_mode; }
+bool					Channel::isInviteOnly() const { return m_inviteOnly; }
+bool					Channel::isTopicProtected() const { return m_topicOpsOnly; }
+bool					Channel::hasKey() const { return m_hasKey; }
+const std::string&			Channel::getKey() const { return m_key; }
+bool					Channel::hasUserLimit() const { return m_hasUserLimit; }
+size_t					Channel::getUserLimit() const { return m_userLimit; }
+size_t					Channel::getMemberCount() const { return m_members.size(); }
+bool					Channel::isOperator(const Client* client) const { return m_operators.find(const_cast<Client*>(client)) != m_operators.end(); }
 
 void Channel::addMember(Client* client)
 {
@@ -15,6 +23,7 @@ void Channel::addMember(Client* client)
 
 void Channel::removeMember(Client* client)
 {
+	m_operators.erase(client);
 	m_members.erase(client);
 }
 
@@ -38,8 +47,47 @@ void	Channel::setTopic(std::string topic)
 	m_topic = topic;
 }
 
-void	Channel::setMode(char c)
+void	Channel::setInviteOnly(bool enabled)
 {
-	m_mode = c;
+	m_inviteOnly = enabled;
+}
+
+void	Channel::setTopicProtected(bool enabled)
+{
+	m_topicOpsOnly = enabled;
+}
+
+void	Channel::setKey(const std::string& key)
+{
+	m_hasKey = true;
+	m_key = key;
+}
+
+void	Channel::clearKey()
+{
+	m_hasKey = false;
+	m_key.clear();
+}
+
+void	Channel::setUserLimit(size_t limit)
+{
+	m_hasUserLimit = true;
+	m_userLimit = limit;
+}
+
+void	Channel::clearUserLimit()
+{
+	m_hasUserLimit = false;
+	m_userLimit = 0;
+}
+
+void	Channel::addOperator(Client* client)
+{
+	m_operators.insert(client);
+}
+
+void	Channel::removeOperator(Client* client)
+{
+	m_operators.erase(client);
 }
 

@@ -42,11 +42,12 @@ private:
 	void	handlePrivmsg(Client& client, const Command& cmd);
 	void	handleQuit(Client& client, const Command& cmd);
 	void	handleTopic(Client& client, const Command& cmd);
-	
+	void	handleMode(Client& client, const Command& cmd);
+
 	std::string	makePrefix(const Client &client) const;
 	bool	isNicknameInUse(const std::string& nickname) const;
-	void	broadcast(const Channel* channel, const std::string& message);
-	void	findOrCreateChannel(Client& client, const std::string& channelName);
+	void	broadcast(const Channel* channel, const std::string& message, const Client* exclude = NULL);
+	void	findOrCreateChannel(Client& client, const std::string& channelName, const std::string& keyArg);
 
 	// TOPIC helper methods
 	void	viewOrWriteTopic(Client& client, const Channel* channel);

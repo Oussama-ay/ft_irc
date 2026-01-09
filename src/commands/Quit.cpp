@@ -10,7 +10,6 @@ void	Server::notifyQuitFromChannels(Client& client, const std::string& quitMessa
 		{
 			std::string quitMsg = ":" + makePrefix(client) + " QUIT :" + quitMessage + "\r\n";
 			broadcast(chanIt->second, quitMsg);
-			chanIt->second->removeMember(&client);
 		}
 		++chanIt;
 	}

@@ -14,10 +14,16 @@ void	Server::viewOrWriteTopic(Client& client, const Channel* channel)
 void	Server::checkPermisionAndBroadcast(Client& client, const std::vector<std::string>& args)
 {
 	size_t		size(args.size());
-	Channel*	channel(m_channels[args[0]]);
+	std::map<std::string, Channel *>::iterator it = m_channels.find(args[0]);
+	if (it == m_channels.end())
+	{
+		sendTo(client, numeric("403", client.getNickname(), args[0] + " :No such channel"));
+		return ;
+	}
+	Channel* channel = it->second;
 	std::string	newTopic;
 
-	if (channel->getMode() == 't' && !client.isOperator())
+	if (channel->isTopicProtected() && !channel->isOperator(&client))
 	{
 		sendTo(client, numeric("482", client.getNickname(), channel->getName() + " :You're not channel operator"));
 		return ;
@@ -47,14 +53,20 @@ void	Server::handleTopic(Client& client, const Command& cmd)
 		sendTo(client, numeric("461", client.getNickname(), "TOPIC :Not enough parameters"));
 		return;
 	}
-	const	Channel*	channel = m_channels[cmd.args[0]];
+	std::map<std::string, Channel *>::iterator it = m_channels.find(cmd.args[0]);
+	if (it == m_channels.end())
+	{
+		sendTo(client, numeric("403", client.getNickname(), cmd.args[0] + " :No such channel"));
+		return ;
+	}
+	Channel* channel = it->second;
 	if (!channel->hasMember(&client))
 	{
 		sendTo(client, numeric("442", client.getNickname(), channel->getName() + " :You're not on that channel"));
 		return ;
 	}
 	if (size == 1)
-		viewOrWriteTopic(client, m_channels[cmd.args[0]]);
+		viewOrWriteTopic(client, channel);
 	else
 		checkPermisionAndBroadcast(client, cmd.args);
 }

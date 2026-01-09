@@ -7,19 +7,20 @@ std::string	Server::makePrefix(const Client &client) const
 	return (nick + "!" + user + "@" + m_hostname);
 }
 
-void Server::broadcast(const Channel* channel, const std::string& message)
+void Server::broadcast(const Channel* channel, const std::string& message, const Client* exclude)
 {
 	const std::set<Client*>& 			members = channel->getMembers();
 	std::set<Client*>::const_iterator	it = members.begin();
 
 	while (it != members.end())
 	{
-		sendTo(*(*it), message);
+		if (exclude == NULL || *it != exclude)
+			sendTo(*(*it), message);
 		it++;
 	}
 }
 
-void	Server::findOrCreateChannel(Client& client, const std::string& channelName)
+void	Server::findOrCreateChannel(Client& client, const std::string& channelName, const std::string& keyArg)
 {
 	std::map<std::string, Channel *>::iterator	it;
 	std::string 								joinMsg;
@@ -29,18 +30,34 @@ void	Server::findOrCreateChannel(Client& client, const std::string& channelName)
 	it = m_channels.find(channelName);
 	if (it != m_channels.end())
 	{
-		it->second->addMember(&client);
-		broadcast(it->second, joinMsg);
-		if (it->second->getTopic().empty())
+		Channel* channel = it->second;
+		if (channel->isInviteOnly())
+		{
+			sendTo(client, numeric("473", client.getNickname(), channelName + " :Cannot join channel (+i)"));
+			return;
+		}
+		if (channel->hasKey() && channel->getKey() != keyArg)
+		{
+			sendTo(client, numeric("475", client.getNickname(), channelName + " :Cannot join channel (+k)"));
+			return;
+		}
+		if (channel->hasUserLimit() && channel->getMemberCount() >= channel->getUserLimit())
+		{
+			sendTo(client, numeric("471", client.getNickname(), channelName + " :Cannot join channel (+l)"));
+			return;
+		}
+		channel->addMember(&client);
+		broadcast(channel, joinMsg, NULL);
+		if (channel->getTopic().empty())
 			sendTo(client, numeric("331", client.getNickname(), channelName + " :No topic is set"));
 		else
-			sendTo(client, numeric("332", client.getNickname(), channelName + " :" + it->second->getTopic()));
+			sendTo(client, numeric("332", client.getNickname(), channelName + " :" + channel->getTopic()));
 	}
 	else
 	{
 		newChannel = new Channel(channelName);
-		client.setOperator(true);
 		newChannel->addMember(&client);
+		newChannel->addOperator(&client);
 		m_channels[channelName] = newChannel;
 		sendTo(client, joinMsg);
 		sendTo(client, numeric("331", client.getNickname(), channelName + " :No topic is set"));
@@ -69,7 +86,10 @@ void	Server::handleJoin(Client& client, const Command& cmd)
 		return ;
 	}
 	channelName = cmd.args[0];
-	findOrCreateChannel(client, channelName);
+	std::string keyArg;
+	if (size > 1)
+		keyArg = cmd.args[1];
+	findOrCreateChannel(client, channelName, keyArg);
 
 	const std::set<Client *>&	cl = m_channels[channelName]->getMembers();
 	std::string		names("= " + channelName + " ");
@@ -77,8 +97,8 @@ void	Server::handleJoin(Client& client, const Command& cmd)
 
 	for (std::set<Client *>::iterator it = cl.begin(); it != cl.end(); ++it)
 	{
-		if ((*it)->isOperator())
-			names += ":@" + (*it)->getNickname();
+		if (m_channels[channelName]->isOperator(*it))
+			names += " @" + (*it)->getNickname();
 		else
 			names += " " + (*it)->getNickname();
 	}

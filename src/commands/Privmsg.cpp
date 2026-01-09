@@ -13,7 +13,7 @@ Client	*Server::findClientByNickname(const std::string& nickname) const
 void	Server::sendPrivmsgToChannel(Client& client, Channel* channel, const std::string& message)
 {
 	std::string privMsg = ":" + makePrefix(client) + " PRIVMSG " + channel->getName() + " :" + message + "\r\n";
-	broadcast(channel, privMsg);
+	broadcast(channel, privMsg, &client);
 }
 
 void	Server::sendPrivmsgToUser(Client& client, Client* targetClient, const std::string& message)

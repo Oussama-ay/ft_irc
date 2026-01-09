@@ -10,19 +10,38 @@ private:
     std::set<Client *>	m_members;
     std::set<Client *>	m_operators;
     std::string			m_topic;
-	char				m_mode;
+	bool				m_inviteOnly;
+	bool				m_topicOpsOnly;
+	bool				m_hasKey;
+	std::string			m_key;
+	bool				m_hasUserLimit;
+	size_t				m_userLimit;
 
 public:
     Channel(const std::string &name);
     ~Channel();
-	
+
     const std::set<Client *>&	getMembers() const;
 	const std::string&			getTopic() const;
     const std::string&          getName() const;
-    const char&					getMode() const;
+	bool						isInviteOnly() const;
+	bool						isTopicProtected() const;
+	bool						hasKey() const;
+	const std::string&			getKey() const;
+	bool						hasUserLimit() const;
+	size_t						getUserLimit() const;
+	size_t						getMemberCount() const;
+	bool						isOperator(const Client* client) const;
 
-	void						setTopic(std::string);
-	void						setMode(char);
+	void					setTopic(std::string);
+	void					setInviteOnly(bool enabled);
+	void					setTopicProtected(bool enabled);
+	void					setKey(const std::string& key);
+	void					clearKey();
+	void					setUserLimit(size_t limit);
+	void					clearUserLimit();
+	void					addOperator(Client* client);
+	void					removeOperator(Client* client);
 
     void addMember(Client *client);
     void removeMember(Client *client);

@@ -14,6 +14,7 @@ Server::Server(int port, const std::string &password)
 	commandMap["PRIVMSG"] = &Server::handlePrivmsg;
 	commandMap["QUIT"] = &Server::handleQuit;
 	commandMap["TOPIC"] = &Server::handleTopic;
+	commandMap["MODE"] = &Server::handleMode;
 }
 
 Server::~Server()
@@ -60,22 +61,37 @@ void	Server::acceptNewClients()
 void	Server::removeClient(int fd)
 {
 	std::map<int, Client *>::iterator it = m_clients.find(fd);
-	std::map<std::string, Client *>::iterator it2 = m_nicknames.find(it->second->getNickname());
-	if (it != m_clients.end())
+	if (it == m_clients.end())
 	{
-		delete it->second;
-		m_clients.erase(it);
-		m_nicknames.erase(it2);
+		removePollFd(fd);
+		close(fd);
+		std::cout << "Closed client fd=" << fd << "\n";
+		return ;
 	}
+
+	Client *client = it->second;
+
+	// Clean membership/operator state from all channels
+	for (std::map<std::string, Channel *>::iterator chanIt = m_channels.begin(); chanIt != m_channels.end(); ++chanIt)
+	{
+		if (chanIt->second->hasMember(client))
+			chanIt->second->removeMember(client);
+	}
+
+	std::map<std::string, Client *>::iterator it2 = m_nicknames.find(client->getNickname());
+	m_clients.erase(it);
+	if (it2 != m_nicknames.end())
+		m_nicknames.erase(it2);
 	removePollFd(fd);
 	close(fd);
+	delete client;
 	std::cout << "Closed client fd=" << fd << "\n";
 }
 
 void Server::handleClientEvent(int fd, short events)
 {
 	std::map<int, Client *>::iterator it;
-	
+
 	it = m_clients.find(fd);
 	if (it == m_clients.end())
 		return ;
@@ -105,6 +121,10 @@ void	Server::handleReadable(Client &client)
 	client.appendToRecv(std::string(buffer, ret));
 	if(client.getRecvBuffer().find_first_of("\r\n") == std::string::npos)
 			return ;
+	std::cout << "-----------------------------\n";
+	std::cout << "recv :\n";
+	std::cout << client.getRecvBuffer();
+	std::cout << "-----------------------------\n";
 	std::vector<Command> cmds = Parser::processBuffer(client.getRecvBuffer());
 	execute(client, cmds);
 }
@@ -127,6 +147,10 @@ void	Server::handleWritable(Client &client)
 		removeClient(client.getFd());
 		return ;
 	}
+	std::cout << "-----------------------------\n";
+	std::cout << "sent :\n";
+	std::cout << out.substr(0, sent);
+	std::cout << "-----------------------------\n";
 	out.erase(0, sent);
 	if (out.empty())
 	{
@@ -146,7 +170,7 @@ void	Server::run()
 		int nfds = poll(&m_pollfds[0], m_pollfds.size(), -1);
 		if (nfds < 0)
 			throw std::runtime_error("poll() failed");
-		for (i = 0; i < m_pollfds.size(); i++)
+		for (i = m_pollfds.size(); i-- > 0; )
 		{
 			p = &m_pollfds[i];
 			if (p->revents == 0)

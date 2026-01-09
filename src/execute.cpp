@@ -14,14 +14,8 @@ void Server::execute(Client& client, const std::vector<Command>& inputLines)
 			(this->*(it->second))(client, inputLines[i]);
 		else
 		{
-			// if (client.getStat() != REGISTERED){}
-				// send(client.getFd(), "ERROR :You must complete registration first (PASS/NICK/USER)\r\n", 63, 0);
-			// else
-			// {
-				// msg = ":server 421 " + client.getNickname() + " " 
-				// 		+ inputLines[i].command + " :Unknown command\r\n";
-				// send(client.getFd(), msg.c_str(), msg.size(), 0);
-			// }
+			msg = numeric("421", client.getNickname(), inputLines[i].command + " :Unknown command");
+			sendTo(client, msg);
 		}
 	}
 }
