@@ -9,12 +9,12 @@ void Server::handleUsername(Client& client, const Command& cmd)
 	}
 	if (client.isRegistered())
 	{
-		sendTo(client, numeric("462", client.getNickname(), ":Already registered"));
+		sendTo(client, numeric("462", client.getNickname(), ":You may not reregister"));
 		return ;
 	}
 	if (!client.isPassOk())
 	{
-		sendTo(client, numeric("462", client.getNickname(), ":Enter Password first"));
+		sendTo(client, numeric("464", client.getNickname(), ":Password incorrect"));
 		return ;
 	}
 	client.setUsername(cmd.args[0]);

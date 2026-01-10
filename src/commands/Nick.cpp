@@ -19,25 +19,26 @@ static bool	isValidNickname(const std::string& nickname)
 
 void	Server::handleNickname(Client& client, const Command& cmd)
 {
-	std::string Nick = cmd.args[0];
+	std::string nickname;
 
 	if (cmd.args.size() < 1)
 	{
-		sendTo(client, numeric("461", client.getNickname(), "NICK :Not enough parameters"));
+		sendTo(client, numeric("431", client.getNickname(), ":No nickname given"));
 		return ;
 	}
-	if (!isValidNickname(Nick))
+	nickname = cmd.args[0];
+	if (!isValidNickname(nickname))
 	{
-		sendTo(client, numeric("432", client.getNickname(), Nick + " :Erroneous nickname"));
+		sendTo(client, numeric("432", client.getNickname(), nickname + " :Erroneous nickname"));
 		return ;
 	}
-	if (isNicknameInUse(Nick))
+	if (isNicknameInUse(nickname))
 	{
-		sendTo(client, numeric("433", client.getNickname(), Nick + " :Nickname is already in use"));
+		sendTo(client, numeric("433", client.getNickname(), nickname + " :Nickname is already in use"));
 		return;
 	}
-	client.setNickname(Nick);
-	m_nicknames[Nick] = &client;
+	client.setNickname(nickname);
+	m_nicknames[nickname] = &client;
 	client.setNickOk(true);
 	checkRegistration(client);
 }
