@@ -20,6 +20,25 @@ void Server::broadcast(const Channel* channel, const std::string& message, const
 	}
 }
 
+bool Server::broadcastAndRemoveMember(Client& sender, Channel* channel, const std::string& channelName, Client* clientToRemove, const std::string& message)
+{
+	if (!channel->hasMember(clientToRemove))
+	{
+		sendTo(sender, numeric("442", sender.getNickname(), channel->getName() + " :You're not on that channel"));
+		return false;
+	}
+
+	broadcast(channel, message);
+	channel->removeMember(clientToRemove);
+	
+	if (channel->getMembers().empty())
+	{
+		delete channel;
+		m_channels.erase(channelName);
+	}
+	return true;
+}
+
 void	Server::findOrCreateChannel(Client& client, const std::string& channelName, const std::string& keyArg)
 {
 	std::map<std::string, Channel *>::iterator	it;
@@ -75,7 +94,7 @@ void	Server::handleJoin(Client& client, const Command& cmd)
 
 	if (!client.isRegistered())
 	{
-		sendTo(client, numeric("461", client.getNickname(), ":You have not registered"));
+		sendTo(client, numeric("451", client.getNickname(), ":You have not registered"));
 		return ;
 	}
 	if (size == 0)
@@ -85,7 +104,7 @@ void	Server::handleJoin(Client& client, const Command& cmd)
 	}
 	if (cmd.args[0].empty() || cmd.args[0][0] != '#')
 	{
-		sendTo(client, numeric("403", client.getNickname(), channelName + ":No such channel"));
+		sendTo(client, numeric("403", client.getNickname(), cmd.args[0] + " :No such channel"));
 		return ;
 	}
 	channelName = cmd.args[0];

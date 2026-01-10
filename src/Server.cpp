@@ -16,6 +16,8 @@ Server::Server(int port, const std::string &password)
 	commandMap["TOPIC"] = &Server::handleTopic;
 	commandMap["MODE"] = &Server::handleMode;
 	commandMap["INVITE"] = &Server::handleInvite;
+	commandMap["PART"] = &Server::handlePART;
+	commandMap["KICK"] = &Server::handleKICK;
 }
 
 Server::~Server()

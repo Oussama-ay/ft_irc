@@ -44,11 +44,21 @@ private:
 	void	handleTopic(Client& client, const Command& cmd);
 	void	handleMode(Client& client, const Command& cmd);
 	void	handleInvite(Client& client, const Command& cmd);
+	void	handlePART(Client& client, const Command& cmd);
+	void	handleKICK(Client& client, const Command& cmd);
 
 	std::string	makePrefix(const Client &client) const;
 	bool	isNicknameInUse(const std::string& nickname) const;
 	void	broadcast(const Channel* channel, const std::string& message, const Client* exclude = NULL);
+	bool	broadcastAndRemoveMember(Client& sender, Channel* channel, const std::string& channelName, Client* clientToRemove, const std::string& message);
 	void	findOrCreateChannel(Client& client, const std::string& channelName, const std::string& keyArg);
+
+	// PART helper methods
+	void	getChannelNames(std::string	input, std::vector<std::string>& channels);
+	void	partFromChannel(Client& client, const std::string& channelName, const std::string& reason);
+
+	// KICK helper methods
+	void	kickFromChannel(Client& client, const std::string& channelName, const std::string& targetNick, const std::string& reason);
 
 	// TOPIC helper methods
 	void	viewOrWriteTopic(Client& client, const Channel* channel);
