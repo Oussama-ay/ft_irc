@@ -43,6 +43,7 @@ private:
 	void	handleQuit(Client& client, const Command& cmd);
 	void	handleTopic(Client& client, const Command& cmd);
 	void	handleMode(Client& client, const Command& cmd);
+	void	handleInvite(Client& client, const Command& cmd);
 
 	std::string	makePrefix(const Client &client) const;
 	bool	isNicknameInUse(const std::string& nickname) const;

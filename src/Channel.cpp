@@ -15,6 +15,7 @@ bool					Channel::hasUserLimit() const { return m_hasUserLimit; }
 size_t					Channel::getUserLimit() const { return m_userLimit; }
 size_t					Channel::getMemberCount() const { return m_members.size(); }
 bool					Channel::isOperator(const Client* client) const { return m_operators.find(const_cast<Client*>(client)) != m_operators.end(); }
+bool				Channel::isInvited(const Client* client) const { return m_invited.find(const_cast<Client*>(client)) != m_invited.end(); }
 
 void Channel::addMember(Client* client)
 {
@@ -91,3 +92,12 @@ void	Channel::removeOperator(Client* client)
 	m_operators.erase(client);
 }
 
+void	Channel::addInvite(Client* client)
+{
+	m_invited.insert(client);
+}
+
+void	Channel::removeInvite(Client* client)
+{
+	m_invited.erase(client);
+}

@@ -31,7 +31,8 @@ void	Server::findOrCreateChannel(Client& client, const std::string& channelName,
 	if (it != m_channels.end())
 	{
 		Channel* channel = it->second;
-		if (channel->isInviteOnly())
+		bool invited = channel->isInvited(&client);
+		if (channel->isInviteOnly() && !invited)
 		{
 			sendTo(client, numeric("473", client.getNickname(), channelName + " :Cannot join channel (+i)"));
 			return;
@@ -47,7 +48,9 @@ void	Server::findOrCreateChannel(Client& client, const std::string& channelName,
 			return;
 		}
 		channel->addMember(&client);
-		broadcast(channel, joinMsg, NULL);
+		if (invited)
+			channel->removeInvite(&client);
+		broadcast(channel, joinMsg);
 		if (channel->getTopic().empty())
 			sendTo(client, numeric("331", client.getNickname(), channelName + " :No topic is set"));
 		else

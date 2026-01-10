@@ -8,6 +8,7 @@ class Channel
 private:
     std::string			m_name;
     std::set<Client *>	m_members;
+	std::set<Client *>m_invited;
     std::set<Client *>	m_operators;
     std::string			m_topic;
 	bool				m_inviteOnly;
@@ -32,6 +33,7 @@ public:
 	size_t						getUserLimit() const;
 	size_t						getMemberCount() const;
 	bool						isOperator(const Client* client) const;
+	bool			isInvited(const Client* client) const;
 
 	void					setTopic(std::string);
 	void					setInviteOnly(bool enabled);
@@ -42,6 +44,8 @@ public:
 	void					clearUserLimit();
 	void					addOperator(Client* client);
 	void					removeOperator(Client* client);
+	void			addInvite(Client* client);
+	void			removeInvite(Client* client);
 
     void addMember(Client *client);
     void removeMember(Client *client);

@@ -15,6 +15,7 @@ Server::Server(int port, const std::string &password)
 	commandMap["QUIT"] = &Server::handleQuit;
 	commandMap["TOPIC"] = &Server::handleTopic;
 	commandMap["MODE"] = &Server::handleMode;
+	commandMap["INVITE"] = &Server::handleInvite;
 }
 
 Server::~Server()
@@ -38,8 +39,8 @@ void	Server::acceptNewClients()
 	{
 		struct sockaddr_in cli_addr;
 		socklen_t len = sizeof(cli_addr);
-		int clientm_fd = accept(m_listener, (struct sockaddr *)&cli_addr, &len);
-		if (clientm_fd < 0)
+		int client_fd = accept(m_listener, (struct sockaddr *)&cli_addr, &len);
+		if (client_fd < 0)
 		{
 			if (errno == EWOULDBLOCK || errno == EAGAIN) // This is if there are no more clients waiting to be accepted right now
 				break ;
@@ -47,14 +48,13 @@ void	Server::acceptNewClients()
 		}
 
 		// set non-blocking
-		fcntl(clientm_fd, F_SETFL, O_NONBLOCK);
+		fcntl(client_fd, F_SETFL, O_NONBLOCK);
 
-		Client *c = new Client(clientm_fd);
-		m_hostname = inet_ntoa(cli_addr.sin_addr);
-		m_clients[clientm_fd] = c;
-		addPollFd(clientm_fd, POLLIN);
+		Client *c = new Client(client_fd);
+		m_clients[client_fd] = c;
+		addPollFd(client_fd, POLLIN);
 
-		std::cout << "Accepted client fd=" << clientm_fd << " from " << m_hostname << ":" << ntohs(cli_addr.sin_port) << "\n";
+		std::cout << "Accepted client fd=" << client_fd << " from " << inet_ntoa(cli_addr.sin_addr) << ":" << ntohs(cli_addr.sin_port) << "\n";
 	}
 }
 
@@ -121,10 +121,10 @@ void	Server::handleReadable(Client &client)
 	client.appendToRecv(std::string(buffer, ret));
 	if(client.getRecvBuffer().find_first_of("\r\n") == std::string::npos)
 			return ;
-	std::cout << "-----------------------------\n";
-	std::cout << "recv :\n";
-	std::cout << client.getRecvBuffer();
-	std::cout << "-----------------------------\n";
+	// std::cout << "-----------------------------\n";
+	// std::cout << "recv :\n";
+	// std::cout << client.getRecvBuffer();
+	// std::cout << "-----------------------------\n";
 	std::vector<Command> cmds = Parser::processBuffer(client.getRecvBuffer());
 	execute(client, cmds);
 }
@@ -147,10 +147,10 @@ void	Server::handleWritable(Client &client)
 		removeClient(client.getFd());
 		return ;
 	}
-	std::cout << "-----------------------------\n";
-	std::cout << "sent :\n";
-	std::cout << out.substr(0, sent);
-	std::cout << "-----------------------------\n";
+	// std::cout << "-----------------------------\n";
+	// std::cout << "sent :\n";
+	// std::cout << out.substr(0, sent);
+	// std::cout << "-----------------------------\n";
 	out.erase(0, sent);
 	if (out.empty())
 	{
