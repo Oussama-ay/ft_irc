@@ -1,4 +1,6 @@
 NAME = ircserv
+BOT_NAME = 7med_lgzar
+
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
@@ -10,22 +12,30 @@ SRCS = src/main.cpp src/Server.cpp src/Client.cpp src/Parser.cpp src/Channel.cpp
 		src/commands/Mode.cpp src/commands/Invite.cpp src/commands/Part.cpp \
 		src/commands/Kick.cpp
 
+BOT_SRC = src/bot/Bot.cpp
+
 OBJS = $(SRCS:.cpp=.o)
+BOT_OBJ = $(BOT_SRC:.cpp=.o)
 
 all: $(NAME)
 
+bot : $(BOT_NAME)
+
 $(NAME): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
+	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
+
+$(BOT_NAME): $(BOT_OBJ)
+	$(CXX) $(CXXFLAGS) $(BOT_OBJ) -o $(BOT_NAME)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(BOT_OBJ)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) $(BOT_NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all bot clean fclean re
