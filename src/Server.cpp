@@ -73,11 +73,24 @@ void	Server::removeClient(int fd)
 
 	Client *client = it->second;
 
-	// Clean membership/operator state from all channels
+	// Clean membership state from all channels
 	for (std::map<std::string, Channel *>::iterator chanIt = m_channels.begin(); chanIt != m_channels.end(); ++chanIt)
 	{
 		if (chanIt->second->hasMember(client))
 			chanIt->second->removeMember(client);
+	}
+
+	// Drop empty channels
+	std::vector<std::string>	emptyChannels;
+	for (std::map<std::string, Channel *>::iterator chanIt = m_channels.begin(); chanIt != m_channels.end(); ++chanIt)
+	{
+		if (chanIt->second->getMembers().empty())
+			emptyChannels.push_back(chanIt->first);
+	}
+	for (size_t i = 0; i < emptyChannels.size(); ++i)
+	{
+		delete m_channels[emptyChannels[i]];
+		m_channels.erase(emptyChannels[i]);
 	}
 
 	std::map<std::string, Client *>::iterator it2 = m_nicknames.find(client->getNickname());
