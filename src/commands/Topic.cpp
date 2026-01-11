@@ -22,6 +22,7 @@ void	Server::checkPermisionAndBroadcast(Client& client, const std::vector<std::s
 	}
 	Channel* channel = it->second;
 	std::string	newTopic;
+	std::string	broadcastMsg;
 
 	if (channel->isTopicProtected() && !channel->isOperator(&client))
 	{
@@ -35,8 +36,8 @@ void	Server::checkPermisionAndBroadcast(Client& client, const std::vector<std::s
 		newTopic += args[i];
 	}
 	channel->setTopic(newTopic);
-	newTopic = numeric("332", client.getNickname(), channel->getName() + " :" + newTopic);
-	broadcast(channel, newTopic);
+	broadcastMsg = ":" + makePrefix(client) + " TOPIC " + channel->getName() + " :" + newTopic + "\r\n";
+	broadcast(channel, broadcastMsg);
 }
 
 void	Server::handleTopic(Client& client, const Command& cmd)
@@ -45,7 +46,7 @@ void	Server::handleTopic(Client& client, const Command& cmd)
 
 	if (!client.isRegistered())
 	{
-		sendTo(client, numeric("461", client.getNickname(), ":You have not registered"));
+		sendTo(client, numeric("451", client.getNickname(), ":You have not registered"));
 		return ;
 	}
 	if (size < 1)
