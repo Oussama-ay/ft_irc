@@ -26,6 +26,11 @@ void	Server::handleNickname(Client& client, const Command& cmd)
 		sendTo(client, numeric("431", client.getNickname(), ":No nickname given"));
 		return ;
 	}
+	if (!client.isPassOk())
+	{
+		sendTo(client, numeric("464", client.getNickname(), ":Password incorrect"));
+		return ;
+	}
 	nickname = cmd.args[0];
 	if (!isValidNickname(nickname))
 	{
