@@ -12,15 +12,9 @@ void	Server::sendNoticeToTarget(Client& client, const std::string& target, const
 	{
 		it = m_channels.find(target);
 		if (it == m_channels.end())
-		{
-			sendTo(client, numeric("403", client.getNickname(), target + " :No such channel"));
 			return ;
-		}
 		if (!it->second->hasMember(&client))
-		{
-			sendTo(client, numeric("404", client.getNickname(), target + " :Cannot send to channel"));
 			return ;
-		}
 		notice = ":" + makePrefix(client) + " NOTICE " + target + " :" + message + "\r\n";
 		broadcast(it->second, notice, &client);
 	}
@@ -28,10 +22,7 @@ void	Server::sendNoticeToTarget(Client& client, const std::string& target, const
 	{
 		targetClient = findClientByNickname(target);
 		if (!targetClient)
-		{
-			sendTo(client, numeric("401", client.getNickname(), target + " :No such nick/channel"));
 			return ;
-		}
 		notice = ":" + makePrefix(client) + " NOTICE " + targetClient->getNickname() + " :" + message + "\r\n";
 		sendTo(*targetClient, notice);
 	}
@@ -41,22 +32,10 @@ void	Server::handleNotice(Client& client, const Command& cmd)
 {
 	std::string					message;
 	std::vector<std::string>	targets;
+	size_t						size;
 
-	if (!client.isRegistered())
-	{
-		sendTo(client, numeric("451", client.getNickname(), ":You have not registered"));
+	if (!client.isRegistered() || cmd.args.size() < 2)
 		return ;
-	}
-	if (cmd.args.size() < 1)
-	{
-		sendTo(client, numeric("411", client.getNickname(), "NOTICE :No recipient given"));
-		return ;
-	}
-	if (cmd.args.size() < 2)
-	{
-		sendTo(client, numeric("412", client.getNickname(), "NOTICE :No text to send"));
-		return ;
-	}
 
 	for (size_t i = 1; i < cmd.args.size(); ++i)
 	{
@@ -67,7 +46,8 @@ void	Server::handleNotice(Client& client, const Command& cmd)
 	if (message.empty())
 		return ;
 
-	getChannelNames(cmd.args[0], targets);
-	for (size_t i = 0; i < targets.size(); ++i)
+	getNames(cmd.args[0], targets);
+	size = targets.size();
+	for (size_t i = 0; i < size; ++i)
 		sendNoticeToTarget(client, targets[i], message);
 }

@@ -56,7 +56,7 @@ private:
 	void	joinSingleChannel(Client& client, const std::string& channelName, const std::string& keyArg);
 
 	// PART helper methods
-	void	getChannelNames(std::string	input, std::vector<std::string>& channels);
+	void	getNames(std::string	input, std::vector<std::string>& channels);
 	void	partFromChannel(Client& client, const std::string& channelName, const std::string& reason);
 
 	// KICK helper methods

@@ -134,11 +134,11 @@ void	Server::handleJoin(Client& client, const Command& cmd)
 	}
 
 	std::vector<std::string> channels;
-	getChannelNames(cmd.args[0], channels);
+	getNames(cmd.args[0], channels);
 
 	std::vector<std::string> keys;
 	if (size > 1)
-		getChannelNames(cmd.args[1], keys);
+		getNames(cmd.args[1], keys);
 
 	size = channels.size();
 	for (size_t i = 0; i < size; i++)

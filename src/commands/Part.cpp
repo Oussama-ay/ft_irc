@@ -1,6 +1,6 @@
 #include "../../include/Server.hpp"
 
-void	Server::getChannelNames(std::string	input, std::vector<std::string>& channels)
+void	Server::getNames(std::string	input, std::vector<std::string>& container)
 {
 	std::string::size_type del;
 	std::string		token;
@@ -9,12 +9,12 @@ void	Server::getChannelNames(std::string	input, std::vector<std::string>& channe
 	{
 		token = input.substr(0, del);
 		if (!token.empty())
-			channels.push_back(token);
+			container.push_back(token);
 		input = input.substr(del + 1);
 	}
 	token = input;
 	if (!token.empty())
-		channels.push_back(token);
+		container.push_back(token);
 }
 
 void	Server::partFromChannel(Client& client, const std::string& channelName, const std::string& reason)
@@ -48,7 +48,7 @@ void	Server::handlePart(Client& client, const Command& cmd)
 		sendTo(client, numeric("461", client.getNickname(), "PART :Not enough parameters"));
 		return;
 	}
-	getChannelNames(cmd.args[0], channels);
+	getNames(cmd.args[0], channels);
 
 	reason = (cmd.args.size() > 1) ? cmd.args[1] : "Leaving";
 	for (size_t i = 0; i < channels.size(); i++)
