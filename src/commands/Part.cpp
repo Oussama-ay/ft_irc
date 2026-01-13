@@ -33,7 +33,7 @@ void	Server::partFromChannel(Client& client, const std::string& channelName, con
 	broadcastAndRemoveMember(client, channel, channelName, &client, msg);
 }
 
-void	Server::handlePART(Client& client, const Command& cmd)
+void	Server::handlePart(Client& client, const Command& cmd)
 {
 	std::vector<std::string>	channels;
 	std::string					reason;

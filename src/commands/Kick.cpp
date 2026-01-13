@@ -17,7 +17,7 @@ void	Server::kickFromChannel(Client& client, const std::string& channelName, con
 		sendTo(client, numeric("482", client.getNickname(), channel->getName() + " :You're not channel operator"));
 		return;
 	}
-	if (!isNicknameInUse(targetNick))
+	if (!isNicknameInUse(client, targetNick))
 	{
 		sendTo(client, numeric("401", client.getNickname(), targetNick + " :No such nick/channel"));
 		return;
@@ -28,7 +28,7 @@ void	Server::kickFromChannel(Client& client, const std::string& channelName, con
 	broadcastAndRemoveMember(client, channel, channelName, targetClient, msg);
 }
 
-void	Server::handleKICK(Client& client, const Command& cmd)
+void	Server::handleKick(Client& client, const Command& cmd)
 {
 	if (!client.isRegistered())
 	{

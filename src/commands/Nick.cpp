@@ -1,8 +1,9 @@
 #include "../../include/Server.hpp"
 
-bool	Server::isNicknameInUse(const std::string& nickname) const
+bool	Server::isNicknameInUse(Client& client, const std::string& inputNick)
 {
-	return (m_nicknames.find(nickname) != m_nicknames.end());
+	std::map<std::string, Client *>::iterator it = m_nicknames.find(inputNick);
+	return (it != m_nicknames.end() && it->second != &client);
 }
 
 static bool	isValidNickname(const std::string& nickname)
@@ -10,16 +11,17 @@ static bool	isValidNickname(const std::string& nickname)
 	size_t	size(nickname.size());
 
 	if (size == 0 || size > 9)
-		return (false);
+		return false;
 	for (size_t i = 0; i < size; i++)
 		if (!isalnum(nickname[i]) && nickname[i] != '_' && nickname[i] != '-')
-			return (false);
-	return (true);
+			return false;
+	return true;
 }
 
 void	Server::handleNickname(Client& client, const Command& cmd)
 {
-	std::string nickname;
+	std::string inputNick;
+	std::string currentNick;
 
 	if (cmd.args.size() < 1)
 	{
@@ -31,19 +33,24 @@ void	Server::handleNickname(Client& client, const Command& cmd)
 		sendTo(client, numeric("464", client.getNickname(), ":Password incorrect"));
 		return ;
 	}
-	nickname = cmd.args[0];
-	if (!isValidNickname(nickname))
+	inputNick = cmd.args[0];
+	currentNick = client.getNickname();
+	if (!currentNick.empty() && inputNick == currentNick)
+		return;
+	if (!isValidNickname(inputNick))
 	{
-		sendTo(client, numeric("432", client.getNickname(), nickname + " :Erroneous nickname"));
+		sendTo(client, numeric("432", client.getNickname(), inputNick + " :Erroneous nickname"));
 		return ;
 	}
-	if (isNicknameInUse(nickname))
+	if (isNicknameInUse(client, inputNick))
 	{
-		sendTo(client, numeric("433", client.getNickname(), nickname + " :Nickname is already in use"));
-		return;
+		sendTo(client, numeric("433", client.getNickname(), inputNick + " :Nickname is already in use"));
+		return ;
 	}
-	client.setNickname(nickname);
-	m_nicknames[nickname] = &client;
+	if (!currentNick.empty())
+		m_nicknames.erase(currentNick);
+	client.setNickname(inputNick);
+	m_nicknames[inputNick] = &client;
 	client.setNickOk(true);
 	checkRegistration(client);
 }
