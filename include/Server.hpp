@@ -40,15 +40,16 @@ private:
 	void	handlePing(Client &client, const Command &cmd);
 	void	handleCap(Client& client, const Command& cmd);
 	void	handlePrivmsg(Client& client, const Command& cmd);
+	void	handleNotice(Client& client, const Command& cmd);
 	void	handleQuit(Client& client, const Command& cmd);
 	void	handleTopic(Client& client, const Command& cmd);
 	void	handleMode(Client& client, const Command& cmd);
 	void	handleInvite(Client& client, const Command& cmd);
-	void	handlePART(Client& client, const Command& cmd);
-	void	handleKICK(Client& client, const Command& cmd);
+	void	handlePart(Client& client, const Command& cmd);
+	void	handleKick(Client& client, const Command& cmd);
 
 	std::string	makePrefix(const Client &client) const;
-	bool	isNicknameInUse(const std::string& nickname) const;
+	bool	isNicknameInUse(Client& client, const std::string& inputNick);
 	void	broadcast(const Channel* channel, const std::string& message, const Client* exclude = NULL);
 	bool	broadcastAndRemoveMember(Client& sender, Channel* channel, const std::string& channelName, Client* clientToRemove, const std::string& message);
 	void	findOrCreateChannel(Client& client, const std::string& channelName, const std::string& keyArg);
@@ -69,6 +70,9 @@ private:
 	Client	*findClientByNickname(const std::string& nickname) const;
 	void	sendPrivmsgToChannel(Client& client, Channel* channel, const std::string& message);
 	void	sendPrivmsgToUser(Client& client, Client* targetClient, const std::string& message);
+
+	// NOTICE helper methods
+	void	sendNoticeToTarget(Client& client, const std::string& target, const std::string& message);
 
 	// QUIT helper methods
 	void	notifyQuitFromChannels(Client& client, const std::string& quitMessage);

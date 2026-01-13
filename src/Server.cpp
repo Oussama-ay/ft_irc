@@ -12,12 +12,13 @@ Server::Server(int port, const std::string &password)
 	commandMap["PING"] = &Server::handlePing;
 	commandMap["CAP"] = &Server::handleCap;
 	commandMap["PRIVMSG"] = &Server::handlePrivmsg;
+	commandMap["NOTICE"] = &Server::handleNotice;
 	commandMap["QUIT"] = &Server::handleQuit;
 	commandMap["TOPIC"] = &Server::handleTopic;
 	commandMap["MODE"] = &Server::handleMode;
 	commandMap["INVITE"] = &Server::handleInvite;
-	commandMap["PART"] = &Server::handlePART;
-	commandMap["KICK"] = &Server::handleKICK;
+	commandMap["PART"] = &Server::handlePart;
+	commandMap["KICK"] = &Server::handleKick;
 }
 
 Server::~Server()

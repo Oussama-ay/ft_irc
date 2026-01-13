@@ -10,7 +10,7 @@ SRCS = src/main.cpp src/Server.cpp src/Client.cpp src/Parser.cpp src/Channel.cpp
 		src/commands/User.cpp  src/commands/Ping.cpp src/commands/Cap.cpp \
 		src/commands/Privmsg.cpp src/commands/Quit.cpp src/commands/Topic.cpp \
 		src/commands/Mode.cpp src/commands/Invite.cpp src/commands/Part.cpp \
-		src/commands/Kick.cpp
+		src/commands/Kick.cpp src/commands/Notice.cpp
 
 BOT_SRC = src/bot/Bot.cpp
 
