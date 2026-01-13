@@ -39,6 +39,33 @@ bool Server::broadcastAndRemoveMember(Client& sender, Channel* channel, const st
 	return true;
 }
 
+void	Server::joinSingleChannel(Client& client, const std::string& channelName, const std::string& keyArg)
+{
+	std::string names;
+
+	if (channelName.empty() || channelName[0] != '#')
+	{
+		sendTo(client, numeric("403", client.getNickname(), channelName + " :No such channel"));
+		return;
+	}
+	findOrCreateChannel(client, channelName, keyArg);
+	if (m_channels.find(channelName) != m_channels.end() && m_channels[channelName]->hasMember(&client))
+	{
+		const std::set<Client *>& cl = m_channels[channelName]->getMembers();
+		names = "= " + channelName + " ";
+
+		for (std::set<Client *>::iterator it = cl.begin(); it != cl.end(); ++it)
+		{
+			if (m_channels[channelName]->isOperator(*it))
+				names += " @" + (*it)->getNickname();
+			else
+				names += " " + (*it)->getNickname();
+		}
+		sendTo(client, numeric("353", client.getNickname(), names));
+		sendTo(client, numeric("366", client.getNickname(), channelName + " :End of /NAMES list"));
+	}
+}
+
 void	Server::findOrCreateChannel(Client& client, const std::string& channelName, const std::string& keyArg)
 {
 	std::map<std::string, Channel *>::iterator	it;
@@ -88,8 +115,6 @@ void	Server::findOrCreateChannel(Client& client, const std::string& channelName,
 
 void	Server::handleJoin(Client& client, const Command& cmd)
 {
-	std::string		channelName;
-	std::string		topic;
 	size_t			size(cmd.args.size());
 
 	if (!client.isRegistered())
@@ -102,28 +127,23 @@ void	Server::handleJoin(Client& client, const Command& cmd)
 		sendTo(client, numeric("461", client.getNickname(), "JOIN :Not enough parameters"));
 		return;
 	}
-	if (cmd.args[0].empty() || cmd.args[0][0] != '#')
+	if (cmd.args[0].empty())
 	{
-		sendTo(client, numeric("403", client.getNickname(), cmd.args[0] + " :No such channel"));
-		return ;
+		sendTo(client, numeric("461", client.getNickname(), "JOIN :Not enough parameters"));
+		return;
 	}
-	channelName = cmd.args[0];
-	std::string keyArg;
+
+	std::vector<std::string> channels;
+	getChannelNames(cmd.args[0], channels);
+
+	std::vector<std::string> keys;
 	if (size > 1)
-		keyArg = cmd.args[1];
-	findOrCreateChannel(client, channelName, keyArg);
+		getChannelNames(cmd.args[1], keys);
 
-	const std::set<Client *>&	cl = m_channels[channelName]->getMembers();
-	std::string		names("= " + channelName + " ");
-	std::string		endMsg(channelName + " :End of /NAMES list");
-
-	for (std::set<Client *>::iterator it = cl.begin(); it != cl.end(); ++it)
+	size = channels.size();
+	for (size_t i = 0; i < size; i++)
 	{
-		if (m_channels[channelName]->isOperator(*it))
-			names += " @" + (*it)->getNickname();
-		else
-			names += " " + (*it)->getNickname();
+		std::string keyArg = (i < keys.size()) ? keys[i] : "";
+		joinSingleChannel(client, channels[i], keyArg);
 	}
-	sendTo(client, numeric("353", client.getNickname(), names));
-	sendTo(client, numeric("366", client.getNickname(), endMsg));
 }

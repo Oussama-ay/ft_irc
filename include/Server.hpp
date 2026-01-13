@@ -52,6 +52,7 @@ private:
 	void	broadcast(const Channel* channel, const std::string& message, const Client* exclude = NULL);
 	bool	broadcastAndRemoveMember(Client& sender, Channel* channel, const std::string& channelName, Client* clientToRemove, const std::string& message);
 	void	findOrCreateChannel(Client& client, const std::string& channelName, const std::string& keyArg);
+	void	joinSingleChannel(Client& client, const std::string& channelName, const std::string& keyArg);
 
 	// PART helper methods
 	void	getChannelNames(std::string	input, std::vector<std::string>& channels);

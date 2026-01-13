@@ -6,8 +6,10 @@ void Server::execute(Client& client, const std::vector<Command>& inputLines)
 {
 	std::map<std::string, CommandHandler>::iterator	it;
 	std::string										msg;
+	size_t											size;
 
-	for (size_t i = 0; i < inputLines.size(); ++i)
+	size = inputLines.size();
+	for (size_t i = 0; i < size; ++i)
 	{
 		it = commandMap.find(inputLines[i].command);
 		if (it != commandMap.end())

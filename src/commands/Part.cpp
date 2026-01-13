@@ -50,7 +50,7 @@ void	Server::handlePART(Client& client, const Command& cmd)
 	}
 	getChannelNames(cmd.args[0], channels);
 
-	reason = (cmd.args.size() > 1) ? cmd.args[1] : "";
+	reason = (cmd.args.size() > 1) ? cmd.args[1] : "Leaving";
 	for (size_t i = 0; i < channels.size(); i++)
 		partFromChannel(client, channels[i], reason);
 }
