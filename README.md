@@ -9,16 +9,37 @@
 ```
 .
 ├── include
-│   ├── Server.hpp   # Server class declaration
-│   ├── Client.cpp   # Client implementation
-│   └── Parser.hpp   # Parser.cpp class declaration
+│   ├── Channel.hpp      # Channel class declaration
+│   ├── Client.hpp       # Client class declaration
+│   ├── Parser.hpp       # Parser class declaration
+│   ├── Server.hpp       # Server class declaration
+│   └── common.hpp       # Shared constants/utilities
 ├── src
-│   ├── Server.cpp   # Server implementation
-│   ├── Client.cpp   # Client implementation
-│   ├── Parser.cpp   # Parser implementation
-│   └── main.cpp     # server bootstrap
-└── Makefile         # Build rules
+│   ├── Channel.cpp      # Channel implementation
+│   ├── Client.cpp       # Client implementation
+│   ├── Parser.cpp       # Parser implementation
+│   ├── Server.cpp       # Server implementation
+│   ├── Server_utils.cpp # Server helpers (socket ops, replies, etc.)
+│   ├── execute.cpp      # Command dispatcher/loop
+│   ├── main.cpp         # Server bootstrap
+│   └── commands         # IRC command handlers
+│       ├── Cap.cpp
+│       ├── Invite.cpp
+│       ├── Join.cpp
+│       ├── Kick.cpp
+│       ├── Mode.cpp
+│       ├── Nick.cpp
+│       ├── Part.cpp
+│       ├── Pass.cpp
+│       ├── Ping.cpp
+│       ├── Privmsg.cpp
+│       ├── Quit.cpp
+│       ├── Topic.cpp
+│       └── User.cpp
+├── Makefile             # Build rules
+└── README.md            # Project overview
 ```
+
 
 ## Server / Client Workflow
 
