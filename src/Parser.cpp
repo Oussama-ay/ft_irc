@@ -69,8 +69,6 @@ Command Parser::parseLine(const std::string &line)
 {
 	Command cmd;
 	cmd.isValid = true;
-	std::stringstream ss(line);
-	std::string segment;
 
 	size_t prefixEnd = 0;
 	// hna kanjbd l prefix ila kan:

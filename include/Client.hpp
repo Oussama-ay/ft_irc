@@ -2,7 +2,6 @@
 #define CLIENT_HPP
 
 #include "common.hpp"
-#include "Parser.hpp"
 
 class Client
 {
@@ -20,12 +19,10 @@ public:
 	bool					isPassOk() const;
 	bool					isNickOk() const;
 	bool					isUserOk() const;
-	bool					isOperator() const;
 
 	void					setPassOk(bool ok);
 	void					setNickOk(bool ok);
 	void					setUserOk(bool ok);
-	void					setOperator(bool ok);
 
 	void					setNickname(const std::string& nickname);
 	void					setUsername(const std::string& username);
@@ -44,7 +41,6 @@ private:
 	bool					m_passOk;
 	bool					m_nickOk;
 	bool					m_userOk;
-	bool					m_isOperator;
 
 	std::string				m_nickname;
 	std::string				m_username;

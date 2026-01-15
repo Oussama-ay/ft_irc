@@ -8,7 +8,6 @@
 #include <iostream>
 #include <sstream>
 #include <set>
-#include <algorithm>
 
 // POSIX / system headers
 #include <sys/socket.h>
@@ -17,8 +16,6 @@
 #include <fcntl.h>
 #include <cstring>
 #include <cerrno>
-#include <iostream>
-#include <cstdlib>
 #include <cstdlib>
 #include <signal.h>
 

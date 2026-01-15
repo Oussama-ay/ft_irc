@@ -4,6 +4,7 @@
 #include "Client.hpp"
 #include "common.hpp"
 #include "Channel.hpp"
+#include "Parser.hpp"
 
 class Server
 {

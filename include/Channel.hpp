@@ -1,14 +1,14 @@
 #ifndef CHANNELS_HPP
 #define CHANNELS_HPP
 
-#include "../include/Client.hpp"
+#include "Client.hpp"
 
 class Channel
 {
 private:
     std::string			m_name;
     std::set<Client *>	m_members;
-	std::set<Client *>m_invited;
+	std::set<Client *>	m_invited;
     std::set<Client *>	m_operators;
     std::string			m_topic;
 	bool				m_inviteOnly;
