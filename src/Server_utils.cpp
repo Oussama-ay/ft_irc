@@ -45,7 +45,7 @@ void	Server::setupListener(int port)
 	if (bind(m_listener, (struct sockaddr *)&addr, sizeof(addr)) < 0)
 		throw std::runtime_error("bind() failed");
 
-	if (listen(m_listener, 32) < 0)
+	if (listen(m_listener, SOMAXCONN) < 0)
 		throw std::runtime_error("listen() failed");
 
 	// set non-blocking
