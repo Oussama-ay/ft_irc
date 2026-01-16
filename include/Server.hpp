@@ -5,6 +5,7 @@
 #include "common.hpp"
 #include "Channel.hpp"
 #include "Parser.hpp"
+#include "Bot.hpp"
 
 class Server
 {

@@ -4,6 +4,7 @@
 Server::Server(int port, const std::string &password)
 	: m_listener(-1), m_password(password), m_pollfds(), m_clients()
 {
+	m_hostname = SERVER_IP;
 	setupListener(port);
 	commandMap["PASS"] = &Server::handlePass;
 	commandMap["NICK"] = &Server::handleNickname;
@@ -135,7 +136,7 @@ void	Server::handleReadable(Client &client)
 		return ;
 	}
 	client.appendToRecv(std::string(buffer, ret));
-	if(client.getRecvBuffer().find_first_of("\r\n") == std::string::npos)
+	if(client.getRecvBuffer().find("\r\n") == std::string::npos)
 			return ;
 	// std::cout << "-----------------------------\n";
 	// std::cout << "recv :\n";

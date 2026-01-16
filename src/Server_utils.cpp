@@ -40,7 +40,6 @@ void	Server::setupListener(int port)
 	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	m_hostname = inet_ntoa(addr.sin_addr);
 	addr.sin_port = htons(port);
 
 	if (bind(m_listener, (struct sockaddr *)&addr, sizeof(addr)) < 0)
