@@ -1,7 +1,7 @@
 ## Usage
 
 ```bash
-./ft_irc <port> <password>
+./ircserv <port> <password>
 ```
 
 ## Project Structure
